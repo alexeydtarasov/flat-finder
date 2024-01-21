@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "flat-finder"
+version = "0.1.0"
+description = "Cian flats parser (custom url) + Telegram bot"
+authors = ["alexeydtarasov"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+pyyaml = "^6.0.1"
+bs4 = "^0.0.2"
+requests = "^2.31.0"
+pandas = "^2.2.0"
+pytelegrambotapi = "^4.15.2"
+apscheduler = "^3.10.4"
+lxml = "^5.1.0"
+fake-useragent = "^1.4.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
