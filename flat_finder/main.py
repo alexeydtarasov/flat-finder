@@ -23,6 +23,7 @@ def main(config: Dict, secrets: Dict):
         bot.send_photos(flat.saved_images)
         bot.send_message(text=text)
         time.sleep(10)
+    time.sleep(30)
 
 
 if __name__ == "__main__":
@@ -44,5 +45,6 @@ if __name__ == "__main__":
     posting_trigger = CronTrigger(
         day_of_week="*", hour="*", minute=f'*/{config["run_every_n_minute"]}'
     )
+    main(config, secrets)
     scheduler.add_job(main, posting_trigger, args=(config, secrets), max_instances=1)
     scheduler.start()

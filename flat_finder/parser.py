@@ -9,7 +9,7 @@ from typing import List, Dict, Optional
 from dataclasses import dataclass, asdict
 import logging
 
-from flat_finder import utils
+import utils
 
 logger = logging.getLogger(__name__)
 
@@ -44,6 +44,9 @@ def general_info(bs: BeautifulSoup) -> Dict[str, str]:
 
 def geo(bs: BeautifulSoup) -> Dict[str, str]:
     metro = bs.find("div", {"data-name": "SpecialGeo"})
+    if metro is None:
+        logger.error(f"Failed to parse metro, bs=\n{bs}")
+        return {"metro": None, "address": None}
     metro = metro.find("a").text + ", " + metro.find_all("div")[-1].text
     address = bs.find_all("a", {"data-name": "GeoLabel"})
     address = ", ".join([addr.text for addr in address[4:]])
