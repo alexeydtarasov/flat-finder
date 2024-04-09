@@ -2,6 +2,7 @@ import requests
 import os
 
 from bs4 import BeautifulSoup
+from fake_useragent import UserAgent
 import datetime
 import pandas as pd
 import time
@@ -65,6 +66,8 @@ class Cian:
         logger.info("Initialized Cian parser class")
         self.url = url
         self.db_path = db_path
+        self.headers = {'User-Agent': UserAgent().random}
+        logger.info(f'Generated user-agent: {self.headers}')
 
     def _get_query(self, url) -> BeautifulSoup:
         logger.info(f"Loading url: {url[:100]}")
@@ -104,11 +107,11 @@ class Cian:
         )
         if "вчера" in published_at:
             date = datetime.datetime.now() - datetime.timedelta(days=1)
-            month = "янв" if date.month == 1 else "фев"
+            month = "апр" if date.month == 4 else "фев"
             published_at = published_at.replace("вчера", f"{date.day}, {month}")
         elif "сегодня" in published_at:
             date = datetime.datetime.now()
-            month = "янв" if date.month == 1 else "фев"
+            month = "апр" if date.month == 4 else "фев"
             published_at = published_at.replace("сегодня", f"{date.day}, {month}")
 
         result["published_at"] = published_at
@@ -151,12 +154,15 @@ class Cian:
         )
 
         flat.additional_features = additional_features
-        flat.remont = (
-            bs.find("div", {"data-name": "OfferSummaryInfoGroup"})
-            .find_all("div", {"data-name": "OfferSummaryInfoItem"})[-1]
-            .find_all("span")[-1]
-            .text
-        )
+        try:
+            flat.remont = (
+                bs.find("div", {"data-name": "OfferSummaryInfoGroup"})
+                .find_all("div", {"data-name": "OfferSummaryInfoItem"})[-1]
+                .find_all("span")[-1]
+                .text
+            )
+        except:
+            flat.remont = None
         return flat
 
     def parse_page(self) -> List[Flat]:

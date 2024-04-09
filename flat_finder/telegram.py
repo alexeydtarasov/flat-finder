@@ -2,6 +2,7 @@ from typing import List
 
 import telebot
 
+import os
 import logging
 
 logger = logging.getLogger(__name__)
@@ -29,3 +30,5 @@ class Bot:
             )
         for chat_id in self.chat_ids:
             self.bot.send_media_group(chat_id=chat_id, media=medias)
+        
+        os.system(f'rm -rf {os.path.dirname(saved_paths[0])}')
