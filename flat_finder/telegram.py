@@ -9,9 +9,9 @@ logger = logging.getLogger(__name__)
 
 
 class Bot:
-    def __init__(self, token: str, chat_ids: List[int]):
+    def __init__(self, bot: telebot.TeleBot, chat_ids: List[int]):
         logger.info("Initialized telegram-bot")
-        self.bot = telebot.TeleBot(token)
+        self.bot = bot
         self.chat_ids = chat_ids
 
     def send_message(self, text: str, parse_mode="html"):

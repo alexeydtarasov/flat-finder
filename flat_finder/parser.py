@@ -60,6 +60,34 @@ def about_money(bs: BeautifulSoup) -> Dict[str, str]:
     about_money = about_money.replace(price, "")[1:]
     return {"price": price, "about_money": about_money}
 
+def publish_date(bs: BeautifulSoup) -> str:
+    months_order = [
+        'январь', 'февраль', 'март', 'апрель', 'май', 'июнь',
+        'июль', 'август', 'сентябрь', 'октябрь', 'ноябрь', 'декабрь' 
+    ]
+    months_dict = {k: v for k, v in zip(range(1, 13), months_order)}
+    published_at = (
+        bs.find("div", {"data-name": "TimeLabel"}).find_all("div")[-1].text
+    )
+    if "вчера" in published_at:
+        date = datetime.datetime.now() - datetime.timedelta(days=1)
+        month = months_dict[date.month]
+        published_at = published_at.replace("вчера", f"{date.day}, {month}")
+    elif "сегодня" in published_at:
+        date = datetime.datetime.now()
+        month = months_dict[date.month]
+        published_at = published_at.replace("сегодня", f"{date.day}, {month}")
+    return published_at
+
+def remont(bs: BeautifulSoup) -> str:
+    remont_value = (
+        bs.find('div', {'data-name': 'OfferSummaryInfoLayout'})
+        .find("div", {"data-name": "OfferSummaryInfoGroup"})
+        .find_all("div", {"data-name": "OfferSummaryInfoItem"})[-1]
+        .find_all("p")[-1]
+        .text
+    )
+    return remont_value
 
 class Cian:
     def __init__(self, url: str, db_path: str):
@@ -76,7 +104,7 @@ class Cian:
             return BeautifulSoup(r.content, features="lxml")
         logger.error(f"Failed to load url: {url[:100]}")
         return None
-
+    
     def parse_flat(self, bs: BeautifulSoup) -> Flat:
         result = dict()
         flat = bs.find("div", {"data-name": "LinkArea"})
@@ -101,20 +129,7 @@ class Cian:
             attrs_data.pop(1)
         for attr, parser_func, attr_data in zip(attrs, attrs_parsers, attrs_data):
             result.update(parser_func(attr_data))
-
-        published_at = (
-            bs.find("div", {"data-name": "TimeLabel"}).find_all("div")[-1].text
-        )
-        if "вчера" in published_at:
-            date = datetime.datetime.now() - datetime.timedelta(days=1)
-            month = "апр" if date.month == 4 else "фев"
-            published_at = published_at.replace("вчера", f"{date.day}, {month}")
-        elif "сегодня" in published_at:
-            date = datetime.datetime.now()
-            month = "апр" if date.month == 4 else "фев"
-            published_at = published_at.replace("сегодня", f"{date.day}, {month}")
-
-        result["published_at"] = published_at
+        result["published_at"] = publish_date(bs)
         return Flat(**result)
 
     def full_flat_scan(self, flat: Flat, n_photos: int = 7):
@@ -140,6 +155,11 @@ class Cian:
             "Кондиционер",
             "Ванна",
             "Душевая кабина",
+            "Холодильник",
+            "Стиральная машина",
+            "Интернет",
+            "Мебель на кухне",
+            "Мебель в комнатах"
         ]
         additional_features = ", ".join(
             filter(
@@ -152,15 +172,9 @@ class Cian:
                 ),
             )
         )
-
         flat.additional_features = additional_features
         try:
-            flat.remont = (
-                bs.find("div", {"data-name": "OfferSummaryInfoGroup"})
-                .find_all("div", {"data-name": "OfferSummaryInfoItem"})[-1]
-                .find_all("span")[-1]
-                .text
-            )
+            flat.remont = remont(bs)
         except:
             flat.remont = None
         return flat

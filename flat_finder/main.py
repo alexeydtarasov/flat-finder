@@ -1,19 +1,18 @@
 from typing import Dict
 import yaml
 import logging
+import time
 import sqlite3
 import time
 from dataclasses import asdict
-
-from apscheduler.schedulers.blocking import BlockingScheduler
-from apscheduler.triggers.cron import CronTrigger
+from telebot import TeleBot
 
 import parser
 import telegram
 
 
-def main(config: Dict, secrets: Dict):
-    bot = telegram.Bot(token=secrets["tg_bot_token"], chat_ids=secrets["chat_ids"])
+def main(config: Dict, bot: TeleBot, secrets: Dict):
+    bot = telegram.Bot(bot, chat_ids=secrets["chat_ids"])
     text_template = open("data/message_template.html").read().strip()
     cian = parser.Cian(url=config["url"], db_path=config["db_path"])
     flats = cian.parse_page()
@@ -41,10 +40,8 @@ if __name__ == "__main__":
         cursor = conn.cursor()
         cursor.executescript(create_tables_query)
 
-    scheduler = BlockingScheduler()
-    posting_trigger = CronTrigger(
-        day_of_week="*", hour="*", minute=f'*/{config["run_every_n_minute"]}'
-    )
-    main(config, secrets)
-    scheduler.add_job(main, posting_trigger, args=(config, secrets), max_instances=1)
-    scheduler.start()
+    bot = TeleBot(secrets['tg_bot_token'])
+    
+    while True:
+        main(config, bot, secrets)
+        time.sleep(60)
