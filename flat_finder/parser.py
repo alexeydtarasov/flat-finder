@@ -144,7 +144,10 @@ class Cian:
         min_start_photo = min(len(image_sources), 4) - 1
         for img_source in image_sources[min_start_photo : min_start_photo + n_photos]:
             img_name = os.path.basename(img_source)
-            saving_path = f"data/images/{flat.cian_id}/{img_name}"
+            base_path = '.'
+            if os.getenv('PROD'):
+                base_path = os.getenv('BASE_PATH')
+            saving_path = os.path.join(base_path, f"data/images/{flat.cian_id}/{img_name}")
             utils.download_image(img_source, saving_path)
             saved_image_paths.append(saving_path)
             time.sleep(0.5)

@@ -1,0 +1,11 @@
+services:
+  flat-finder:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command:
+      - bash
+      - -c
+      - python /app/flat_finder/main.py
+    volumes:
+      - ./db:/app/db

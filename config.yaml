@@ -1,4 +1,4 @@
-db_path: data/db.sqlite3
+db_path: db/db.sqlite3
 run_every_n_minute: 1
-url: https://www.cian.ru/cat.php?bbox=55.7242977705%2C37.5897838344%2C55.7652089417%2C37.7442790736&currency=2&deal_type=rent&engine_version=2&maxprice=65000&metro%5B0%5D=95&metro%5B1%5D=108&metro%5B2%5D=123&minprice=60000&offer_type=flat&room1=1&room9=1&sort=creation_date_desc&type=4
+url: https://www.cian.ru/cat.php?bbox=54.997817568%2C34.4031285829%2C56.3098846337%2C39.3469762392&currency=2&deal_type=rent&engine_version=2&is_first_floor=0&maxprice=65000&metro%5B0%5D=3&metro%5B1%5D=36&metro%5B2%5D=63&metro%5B3%5D=79&metro%5B4%5D=95&metro%5B5%5D=103&metro%5B6%5D=104&metro%5B7%5D=123&metro%5B8%5D=151&metro%5B9%5D=309&minprice=60000&offer_type=flat&repair%5B0%5D=3&room1=1&room9=1&sort=creation_date_desc&type=4
 message_template_path: data/message_template.html
